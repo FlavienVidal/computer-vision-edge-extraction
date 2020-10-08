@@ -12,11 +12,6 @@ using namespace std;
 // Step 3: complete canny (recommended substep: return Max instead of C to check it) 
 // Step 4 (facultative, for extra credits): implement a Harris Corner detector
 
-
-
-
-
-
 // Raw gradient. No denoising
 void gradient(const Mat&Ic, Mat& G2)
 {
@@ -28,38 +23,34 @@ void gradient(const Mat&Ic, Mat& G2)
 
 	for (int i = 0; i < m; i++) {
 		for (int j = 0; j < n; j++) {
-			// Compute squared gradient (except on borders)
-			// ...
-			float ix, iy;												// FLAVIEN
-			// without this checks, it would crash, as the image would be accessed outside of its domain		// FLAVIEN
-			// Give a 0 gradient, whenever any of the looked up value would be outside the image domain		// FLAVIEN
+			// Squared gradient computation (except on borders)
+
+			float ix, iy;
 
 			// Using forward differences:
-			// if (i == m - 1)											// FLAVIEN
-			// 	iy = 0;												// FLAVIEN
-			// else													// FLAVIEN
-			// 	iy = (float(I.at<uchar>(i + 1, j)) - float(I.at<uchar>(i, j)));					// FLAVIEN
-			// if (j == n - 1)											// FLAVIEN
-			// 	ix = 0;												// FLAVIEN
-			// else													// FLAVIEN
-			// 	ix = (float(I.at<uchar>(i, j + 1)) - float(I.at<uchar>(i, j)));					// FLAVIEN
-			// G2.at<float>(i, j) = (ix*ix + iy*iy);								// FLAVIEN
+			// if (i == m - 1)
+			// 	iy = 0;	
+			// else	
+			// 	iy = (float(I.at<uchar>(i + 1, j)) - float(I.at<uchar>(i, j)));	
+			// if (j == n - 1)
+			// 	ix = 0;	
+			// else
+			// 	ix = (float(I.at<uchar>(i, j + 1)) - float(I.at<uchar>(i, j)));	
+			// G2.at<float>(i, j) = (ix*ix + iy*iy);			
 
 			// Using central differences:
-			if (i == 0 || i == m - 1)										// FLAVIEN
-				iy = 0;												// FLAVIEN
-			else													// FLAVIEN
-				iy = (float(I.at<uchar>(i + 1, j)) - float(I.at<uchar>(i-1, j)))/2;				// FLAVIEN
-			if (j == 0 || j == n - 1)										// FLAVIEN
-				ix = 0;												// FLAVIEN
-			else													// FLAVIEN
-				ix = (float(I.at<uchar>(i, j + 1)) - float(I.at<uchar>(i, j-1)))/2;				// FLAVIEN
-			G2.at<float>(i, j) = (ix*ix + iy*iy);									// FLAVIEN
+			if (i == 0 || i == m - 1)
+				iy = 0;
+			else
+				iy = (float(I.at<uchar>(i + 1, j)) - float(I.at<uchar>(i-1, j)))/2;
+			if (j == 0 || j == n - 1)
+				ix = 0;	
+			else
+				ix = (float(I.at<uchar>(i, j + 1)) - float(I.at<uchar>(i, j-1)))/2;
+			G2.at<float>(i, j) = (ix*ix + iy*iy);
 
 		}
 	}
-
-
 
 }
 
@@ -77,17 +68,17 @@ void sobel(const Mat&Ic, Mat& Ix, Mat& Iy, Mat& G2)
 	for (int i = 0; i < m; i++) {
 		for (int j = 0; j < n; j++) {
 			float ix, iy;
-			if (i == 0 || i == m - 1 || j == 0 || j == n - 1)							// FLAVIEN
-				iy = 0;												// FLAVIEN
-			else													// FLAVIEN
-				iy = ((float(I.at<uchar>(i + 1, j - 1)) - float(I.at<uchar>(i - 1, j - 1))) + 2 * (float(I.at<uchar>(i + 1, j)) - float(I.at<uchar>(i - 1, j))) + (float(I.at<uchar>(i + 1, j - 1)) - float(I.at<uchar>(i - 1, j - 1)))) / 8;
-			if (i == 0 || i == m - 1 || j == 0 || j == n - 1)							// FLAVIEN
-				ix = 0;												// FLAVIEN
-			else													// FLAVIEN
+			if (i == 0 || i == m - 1 || j == 0 || j == n - 1)
+				iy = 0;	
+			else
+				iy = ((float(I.at<uchar>(i+1, j-1)) - float(I.at<uchar>(i-1, j-1))) + 2*(float(I.at<uchar>(i+1, j)) - float(I.at<uchar>(i-1, j))) + (float(I.at<uchar>(i+1, j-1)) - float(I.at<uchar>(i-1, j-1)))) / 8;
+			if (i == 0 || i == m - 1 || j == 0 || j == n - 1)
+				ix = 0;	
+			else				
 				ix = ((float(I.at<uchar>(i - 1, j + 1)) - float(I.at<uchar>(i - 1, j - 1))) + 2 * (float(I.at<uchar>(i, j + 1)) - float(I.at<uchar>(i, j - 1))) + (float(I.at<uchar>(i + 1, j + 1)) - float(I.at<uchar>(i + 1, j - 1)))) / 8;
-			Ix.at<float>(i, j) = ix;										// FLAVIEN
-			Iy.at<float>(i, j) = iy;										// FLAVIEN
-			G2.at<float>(i, j) = (ix*ix + iy*iy);									// FLAVIEN
+			Ix.at<float>(i, j) = ix;
+			Iy.at<float>(i, j) = iy;
+			G2.at<float>(i, j) = (ix*ix + iy*iy);
 		}
 	}
 }
@@ -104,30 +95,13 @@ Mat threshold(const Mat& Ic, float s, bool denoise = false)
 	Mat C(m, n, CV_8U);
 	for (int i = 0; i < m; i++){
 		for (int j = 0; j < n; j++){
-			// C.at<uchar>(i, j) = ...
-			if (G2.at<float>(i, j) > s*s)				// FLAVIEN
-				C.at<uchar>(i, j) = 255;			// FLAVIEN
-			else							// FLAVIEN
-				C.at<uchar>(i, j) = 0;				// FLAVIEN
+			if (G2.at<float>(i, j) > s*s)
+				C.at<uchar>(i, j) = 255;
+			else
+				C.at<uchar>(i, j) = 0;
 		}		
 	}
 	return C;
-}
-
-// Gradient thresholding and denoising: X-Derivative
-Mat threshold_X_derivative(const Mat& Ic, float s)
-{
-	Mat Ix, Iy, G2;
-	sobel(Ic, Ix, Iy, G2);
-	return Ix;
-}
-
-// Gradient thresholding and denoising: Y-Derivative
-Mat threshold_Y_derivative(const Mat& Ic, float s)
-{
-	Mat Ix, Iy, G2;
-	sobel(Ic, Ix, Iy, G2);
-	return Iy;
 }
 
 
@@ -138,9 +112,9 @@ Mat canny(const Mat& Ic, float s1, float s2)
 	sobel(Ic, Ix, Iy, G2);
 
 	int m = Ic.rows, n = Ic.cols;
-	Mat Max(m, n, CV_8U);									// Binary black&white image with white pixels when ( G2 > s1 && max in the direction of the gradient )
-												// http://www.cplusplus.com/reference/queue/queue/
-	queue<Point> Q;										// Enqueue seeds ( Max pixels for which G2 > s2 )
+	Mat Max(m, n, CV_8U);	
+
+	queue<Point> Q;	
 	for (int i = 0; i < m; i++) {
 		for (int j = 0; j < n; j++) {
 
@@ -149,14 +123,20 @@ Mat canny(const Mat& Ic, float s1, float s2)
 			float G0 = G2.at<float>(i, j);
 
 			float PI = 3.14159265;
-			float thetatest = atan(Iy.at<float>(i, j)/Ix.at<float>(i, j)) * 180/PI;	// FLAVIEN
-			// cout << "thetatest is: " << thetatest << endl;				// FLAVIEN
-			float theta = atan2(Iy.at<float>(i, j), Ix.at<float>(i, j)) * 180/PI;	// FLAVIEN
-			// cout << "theta is: " << theta << endl;					// FLAVIEN
+			// float thetatest = atan(Iy.at<float>(i, j)/Ix.at<float>(i, j)) * 180/PI;	
+			// cout << "thetatest is: " << thetatest << endl;
+			float theta = atan2(Iy.at<float>(i, j), Ix.at<float>(i, j)) * 180/PI;
+			// cout << "theta is: " << theta << endl;
+
+			
+			if (theta < 0){
+                		theta = theta + 180; 
+ 			} 
+			//cout << "modified theta is: " << theta << endl;
 
 			if (i > 0 && j > 0 && i < m - 1 && j<n - 1 && G0 > s1*s1){
 
-				if ((-22.5<theta) && (theta<22.5)) {
+				if ((theta < 22.5) || (theta > 157.5)) {
 					if ((G0 > G2.at<float>(i, j+1)) && (G0 > G2.at<float>(i, j-1))) {
 						mvar = 255;
 					}
@@ -188,15 +168,12 @@ Mat canny(const Mat& Ic, float s1, float s2)
     						Q.push(Point(j, i));
 					}
 				}
-
 			}
 
 			else 
 				mvar = 0;
 
-
 			Max.at<uchar>(i, j) = mvar;
-
 		}
 	}
 
@@ -216,7 +193,6 @@ Mat canny(const Mat& Ic, float s1, float s2)
 					
 						if (Max.at<uchar>(i+a, j+b) == 255) {
 							Q.push(Point(j+b, i+a));
-							//C.at<uchar>(i+a, j+b) = 255;	
 						}
 					}
 				}
@@ -226,14 +202,6 @@ Mat canny(const Mat& Ic, float s1, float s2)
 	return C;
 	// return Max;
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -250,18 +218,12 @@ int main()
 	imshow("Input", I); waitKey();
 	imshow("Input in gray", I_color2bgray); waitKey();
 	imshow("Threshold", threshold(I, 15)); waitKey();
+
 	imshow("Threshold + denoising", threshold(I, 15, true)); waitKey();
-	imshow("Threshold + denoising: threshold_X_derivative", threshold_X_derivative(I, 15)); waitKey();
-	imshow("Threshold + denoising: threshold_Y_derivative", threshold_Y_derivative(I, 15)); waitKey();
 
-	// imshow("Non Maximum Suppression", Max); waitKey();	
-	// imshow("Canny", canny(I, 15, 45)); waitKey();		
-	imshow("Non Maximum Suppression", canny(I, 15, 45)); waitKey();	
+	// imshow("Non Maximum Suppression", canny(I, 15, 45)); waitKey();	
+	imshow("Canny edge detection", canny(I, 15, 45)); waitKey();		
 
-	// imshow("Input", I);
-	// imshow("Threshold", threshold(I, 15));
-	// imshow("Threshold + denoising", threshold(I, 15, true));
-	// imshow("Canny", canny(I, 15, 45));
 	// imshow("Harris", harris(I, 15, 45));
 
 	waitKey();
