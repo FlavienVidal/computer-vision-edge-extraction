@@ -36,10 +36,6 @@ Its magnitude indicates the slope of the intensity variation, while its orientat
 #### Gradient and derivatives, Sobel denoising
 Canny edge detection is an image processing method used to detect a wide range of edges in an image while suppressing noise. Here we first convert the image into grayscale. Unig a Sobel operator we compute an approximation of the gradient:
 
-                 [ -1  0  1 ]                 [ 1   2  1 ]
-    Sx = (1/8) * [ -2  0  2 ]    Sy = (1/8) * [ 0   0  0 ] 
-                 [ -1  0  1 ]                 [ -1 -2 -1 ]      
-
 The magnitude and the orientation angle of the gradient will be used for non maximum suppresion. 
 
 #### Non maximim suppression
