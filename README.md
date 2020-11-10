@@ -49,6 +49,8 @@ After this step, the result is still not perfect: some edges may not really be e
 Now that we have determined the positions of the strong and weak edges, we need to determine which of the weak edges are true edges. We can assume that the weak edges that are connected to the strong edges will be real edges. In contrast, weak edges that are not connected to the strong edges will not be real edges and will be set to 0. 
 
 #### Results
+<p align="center">
+  <img src="all_results.png">
+</p>
 
-![all_results](all_results.png)
 
